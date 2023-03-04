@@ -1,8 +1,6 @@
 import sys
 import threading
 import numpy
-import os
-import re
 
 class nodes:
     def __init__(self, parent, child=None):
@@ -57,7 +55,12 @@ def main():
         choice = input("Enter 'I' to input from keyboard or 'F' to input from file: ")
         while choice not in ('I', 'F'):
             choice = input("Invalid choice. Enter 'I' to input from keyboard or 'F' to input from file: ")
-        
+             
+    input_methods = {
+        'I': input_from_keyboard,
+        'F': input_from_file,
+    }
+
     choice = input("Enter 'I' to input from keyboard or 'F' to input from file: ")
     while choice not in input_methods:
         choice = input("Invalid choice. Enter 'I' to input from keyboard or 'F' to input from file: ")
