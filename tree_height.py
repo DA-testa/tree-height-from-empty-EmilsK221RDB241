@@ -4,38 +4,65 @@ import sys
 import threading
 import numpy
 
+class nodes:
+    def __init__(self, parent, child=None):
+        self.parent = parent
+        self.child = child
+        
+    def addChild(self, node):
+        if self.child is None:
+            self.child = []
+        self.child.append(node)
 
 def compute_height(n, parents):
-    nodes = [[] for _ in range(n)]
-    
-    heights = [0] * n
-    for child_idx in range(n):
-        parent_idx = parents[child_idx]
-        if parent_idx == -1:
-            root = child_idx
-        else:
-            nodes[parent_idx].append(child_idx)
-    def compute_node_height(node_idx):
-        if not nodes[node_idx]:
-            return 1
-        child_heights = [compute_node_height(child_idx) for child_idx in nodes[node_idx]]
-        return max(child_heights) + 1
-    return compute_node_height(root)
+    max_height = 0
+    for vertex in range(n):
+        height = 0
+        current = vertex
+        while current != -1:
+            height += 1
+            current = parents[current]
+        max_height = max(max_height, height)
+    return max_height
+
+def maxDepth(node):
+    if node.child is None:
+        return 0
+    children = node.child
+    depth_list = []
+    for child in children:
+        depth_list.append(maxDepth(child))
+    return max(depth_list, default=0) + 1
 
 def main():
     # implement input form keyboard and from files
     n = int(input())
     parents = list(map(int, input().split()))
-    height = compute_height(n, parents)
-    print(height)
     
+    nodes_list = []
+    for i in range(n):
+        nodes_list.append(nodes(parents[i]))
+        
+    for child_index in range(n):
+        parent_index = parents[child_index]
+        if parent_index == -1:
+            root = child_index
+        else:
+            nodes_list[parent_index].addChild(nodes_list[child_index])
+    
+    if len(nodes_list) == 0:
+        return 0
+    
+    height = maxDepth(nodes_list[root]) + 1
+    
+    print(height)
+    return 0   
     # let user input file name to use, don't allow file names with letter a
     # account for github input inprecision
     
     # input number of elements
     # input values in one variable, separate with space, split these values in an array
     # call the function and output it's result
-    pass
 
 # In Python, the default limit on recursion depth is rather low,
 # so raise it here for this problem. Note that to take advantage
