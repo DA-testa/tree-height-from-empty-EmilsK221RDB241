@@ -38,10 +38,10 @@ def maxDepth(node):
 def main():
     
     choice = input("Enter 'K' to input from keyboard or 'F' to input from file: ")
-    while choice not in ('K', 'F'):
+    while choice not in ('I', 'F'):
         choice = input("Invalid choice. Enter 'K' to input from keyboard or 'F' to input from file: ")
 
-    if choice == 'K':
+    if choice == 'I':
         n = int(input().strip())
         parents = list(map(int, input().split()))
     else:
