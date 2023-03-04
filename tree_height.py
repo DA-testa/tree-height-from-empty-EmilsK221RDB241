@@ -2,93 +2,56 @@ import sys
 import threading
 import numpy
 
-class nodes:
-    def __init__(self, parent, child=None):
-        self.parent = parent
-        self.child = child
-        
-    def addChild(self, node):
-        if self.child is None:
-            self.child = []
-        self.child.append(node)
+class Node:
+    def __init__(self):
+        self.children = []
 
-def compute_height(n, parents):
-    max_height = 0
-    for vertex in range(n):
-        height = 0
-        current = vertex
-        while current != -1:
-            height += 1
-            current = parents[current]
-        max_height = max(max_height, height)
-    return max_height
+def build_tree(n, parents):
+    nodes = [Node() for i in range(n)]
+    root = None
+    for i in range(n):
+        parent = parents[i]
+        if parent == -1:
+            root = nodes[i]
+        else:
+            nodes[parent].children.append(nodes[i])
+    return root
 
-def maxDepth(node):
-    if node.child is None:
-        return 0
-    children = node.child
-    depth_list = []
-    for child in children:
-        depth_list.append(maxDepth(child))
-    return max(depth_list, default=0) + 1
-
-def input_from_keyboard():
-    n = int(input().strip())
-    parents = list(map(int, input().split()))
-    return n, parents
-
-def input_from_file():
-    filename = input("Enter filename (without extension): ")
-    while not re.match(r'^[^aA]*$', filename):
-        filename = input("Invalid filename. Enter filename (without extension): ")
-    try:
-        with open(os.path.join('input_files', f"{filename}.txt"), 'r') as f:
-            n = int(f.readline().strip())
-            parents = list(map(int, f.readline().split()))
-    except FileNotFoundError:
-        print("File not found.")
-        return None, None
-    return n, parents
+def compute_height(node):
+    if len(node.children) == 0:
+        return 1
+    else:
+        heights = []
+        for child in node.children:
+            heights.append(compute_height(child))
+        return max(heights) + 1
 
 def main():
-    try:
-        choice = input("Enter 'I' to input from keyboard or 'F' to input from file: ")
-        while choice not in ('I', 'F'):
-            choice = input("Invalid choice. Enter 'I' to input from keyboard or 'F' to input from file: ")
-             
-    input_methods = {
-        'I': input_from_keyboard,
-        'F': input_from_file,
-    }
-
     choice = input("Enter 'I' to input from keyboard or 'F' to input from file: ")
-    while choice not in input_methods:
+    if choice.upper() == 'I':
+        n = int(input("Enter the number of nodes: "))
+        parents = list(map(int, input("Enter the parent of each node separated by space: ").split()))
+    elif choice.upper() == 'F':
+        while True:
+            try:
+                filename = input("Enter the filename (without letter 'a'): ")
+                if 'a' in filename.lower():
+                    print("Invalid filename. Try again.")
+                else:
+                    with open('data/' + filename) as f:
+                        n = int(f.readline())
+                        parents = list(map(int, f.readline().split()))
+                    break
+            except FileNotFoundError:
+                print("File not found. Try again.")
+    else:
         choice = input("Invalid choice. Enter 'I' to input from keyboard or 'F' to input from file: ")
-
-    n, parents = input_methods[choice]()
-
-    if n is None or parents is None:
+        main()
         return
+    
+    root = build_tree(n, parents)
+    height = compute_height(root)
+    print("Height of the tree is:", height)
 
-    nodes_list = []
-    for i in range(n):
-        nodes_list.append(nodes(parents[i]))
-        
-    for child_index in range(n):
-        parent_index = parents[child_index]
-        if parent_index == -1:
-            root = child_index
-        else:
-            nodes_list[parent_index].addChild(nodes_list[child_index])
-    
-    if len(nodes_list) == 0:
-        return 0
-    
-    height = maxDepth(nodes_list[root]) + 1
-    
-    print(height)
-    return 0   
-    
-sys.setrecursionlimit(10**7)
-threading.stack_size(2**27)
-threading.Thread(target=main).start()
+if __name__ == '__main__':
+    main()
