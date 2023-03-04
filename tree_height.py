@@ -53,6 +53,11 @@ def input_from_file():
     return n, parents
 
 def main():
+    try:
+        choice = input("Enter 'I' to input from keyboard or 'F' to input from file: ")
+        while choice not in ('I', 'F'):
+            choice = input("Invalid choice. Enter 'I' to input from keyboard or 'F' to input from file: ")
+        
     
     input_methods = {
         'I': input_from_keyboard,
