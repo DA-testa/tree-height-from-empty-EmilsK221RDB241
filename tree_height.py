@@ -27,27 +27,33 @@ def compute_height(node):
         return max(heights) + 1
 
 def main():
-    choice = input("Enter 'I' to input from keyboard or 'F' to input from file: ")
-    if choice.upper() == 'I':
-        n = int(input("Enter the number of nodes: "))
-        parents = list(map(int, input("Enter the parent of each node separated by space: ").split()))
-    elif choice.upper() == 'F':
-        while True:
-            try:
-                filename = input("Enter the filename (without letter 'a'): ")
-                if 'a' in filename.lower():
-                    print("Invalid filename. Try again.")
-                else:
-                    with open('data/' + filename) as f:
+    def main():
+    tree = Tree()
+    valid_input = False
+    while not valid_input:
+        choice = input("Enter 'I' to input from keyboard or 'F' to input from file: ")
+        if choice.upper() == 'I':
+            n = int(input())
+            parent = list(map(int, input().split()))
+            tree.build_tree(n, parent)
+            valid_input = True
+        elif choice.upper() == 'F':
+            filename = input("Enter the file name: ")
+            if 'a' in filename or 'A' in filename:
+                print("Invalid file name. Please enter a file name without the letter 'a'.")
+            else:
+                try:
+                    with open('data/' + filename, 'r') as f:
                         n = int(f.readline())
-                        parents = list(map(int, f.readline().split()))
-                    break
-            except FileNotFoundError:
-                print("File not found. Try again.")
-    else:
-        choice = input("Invalid choice. Enter 'I' to input from keyboard or 'F' to input from file: ")
-        main()
-        return
+                        parent = list(map(int, f.readline().split()))
+                        tree.build_tree(n, parent)
+                        valid_input = True
+                except FileNotFoundError:
+                    print("File not found. Please enter a valid file name.")
+        else:
+            print("Invalid choice. Please enter 'I' to input from keyboard or 'F' to input from file.")
+    height = tree.compute_height()
+    print(height)
     
     root = build_tree(n, parents)
     height = compute_height(root)
