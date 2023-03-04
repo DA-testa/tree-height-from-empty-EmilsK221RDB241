@@ -36,7 +36,7 @@ def maxDepth(node):
 
 def main():
     # implement input form keyboard and from files
-    n = int(input())
+    n = int(input().strip())
     parents = list(map(int, input().split()))
     
     nodes_list = []
