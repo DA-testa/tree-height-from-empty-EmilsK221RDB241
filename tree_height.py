@@ -1,9 +1,8 @@
-# python3
-
 import sys
 import threading
 import numpy
 import os
+import re
 
 class nodes:
     def __init__(self, parent, child=None):
@@ -35,26 +34,39 @@ def maxDepth(node):
         depth_list.append(maxDepth(child))
     return max(depth_list, default=0) + 1
 
+def input_from_keyboard():
+    n = int(input().strip())
+    parents = list(map(int, input().split()))
+    return n, parents
+
+def input_from_file():
+    filename = input("Enter filename (without extension): ")
+    while not re.match(r'^[^aA]*$', filename):
+        filename = input("Invalid filename. Enter filename (without extension): ")
+    try:
+        with open(os.path.join('input_files', f"{filename}.txt"), 'r') as f:
+            n = int(f.readline().strip())
+            parents = list(map(int, f.readline().split()))
+    except FileNotFoundError:
+        print("File not found.")
+        return None, None
+    return n, parents
+
 def main():
     
-    choice = input("Enter 'K' to input from keyboard or 'F' to input from file: ")
-    while choice not in ('I', 'F'):
-        choice = input("Invalid choice. Enter 'K' to input from keyboard or 'F' to input from file: ")
+    input_methods = {
+        'I': input_from_keyboard,
+        'F': input_from_file,
+    }
 
-    if choice == 'I':
-        n = int(input().strip())
-        parents = list(map(int, input().split()))
-    else:
-        filename = input("Enter filename (without extension): ")
-        while 'a' in filename:
-            filename = input("Invalid filename. Enter filename (without extension): ")
-        try:
-            with open(os.path.join('input_files', f"{filename}.txt"), 'r') as f:
-                n = int(f.readline().strip())
-                parents = list(map(int, f.readline().split()))
-        except FileNotFoundError:
-            print("File not found.")
-            return
+    choice = input("Enter 'I' to input from keyboard or 'F' to input from file: ")
+    while choice not in input_methods:
+        choice = input("Invalid choice. Enter 'I' to input from keyboard or 'F' to input from file: ")
+
+    n, parents = input_methods[choice]()
+
+    if n is None or parents is None:
+        return
 
     nodes_list = []
     for i in range(n):
