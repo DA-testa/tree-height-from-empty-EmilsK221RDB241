@@ -2,62 +2,53 @@ import sys
 import threading
 import numpy
 
-class Node:
-    def __init__(self):
-        self.children = []
 
-def build_tree(n, parents):
-    nodes = [Node() for i in range(n)]
-    root = None
-    for i in range(n):
-        parent = parents[i]
-        if parent == -1:
-            root = nodes[i]
+def compute_height(x, parent):
+
+    child = {i: [] for i in range(x)}
+
+    root = []
+    for i, p in enumerate(parent):
+        if p == -1:
+            root.append(i)
         else:
-            nodes[parent].children.append(nodes[i])
-    return root
+            child[p].append(i)
 
-def compute_height(node):
-    if len(node.children) == 0:
-        return 1
-    else:
-        heights = []
-        for child in node.children:
-            heights.append(compute_height(child))
-        return max(heights) + 1
+    def find_max_depth(node, mdepth):
+
+        if not child[node]:
+            return mdepth
+        else:
+            d = 0
+            for ch in child[node]:
+                ch_depth = find_max_depth(ch, mdepth+1)
+                d = max(d, ch_depth)
+            return d
+
+    height = 0
+    for r in root:
+        h = find_max_depth(r, 0)
+        height = max(height, h)
+
+    return height+1
+
 
 def main():
-    def main():
-    tree = Tree()
-    valid_input = False
-    while not valid_input:
-        choice = input("Enter 'I' to input from keyboard or 'F' to input from file: ")
-        if choice.upper() == 'I':
-            n = int(input())
-            parent = list(map(int, input().split()))
-            tree.build_tree(n, parent)
-            valid_input = True
-        elif choice.upper() == 'F':
-            filename = input("Enter the file name: ")
-            if 'a' in filename or 'A' in filename:
-                print("Invalid file name. Please enter a file name without the letter 'a'.")
-            else:
-                try:
-                    with open('data/' + filename, 'r') as f:
-                        n = int(f.readline())
-                        parent = list(map(int, f.readline().split()))
-                        tree.build_tree(n, parent)
-                        valid_input = True
-                except FileNotFoundError:
-                    print("File not found. Please enter a valid file name.")
-        else:
-            print("Invalid choice. Please enter 'I' to input from keyboard or 'F' to input from file.")
-    height = tree.compute_height()
-    print(height)
-    
-    root = build_tree(n, parents)
-    height = compute_height(root)
-    print("Height of the tree is:", height)
 
-if __name__ == '__main__':
-    main()
+    ievade = input()[0]
+
+    if ievade == 'I':
+        x = int(input())
+        parent = list(map(int, input().split()))
+        print(compute_height(x, parent))
+
+    elif ievade == 'F':
+        f = input()
+        fp = "test/" + f
+        if 'a' not in fp:
+            with open(fp, 'r') as file:
+                print(file.read())
+
+sys.setrecursionlimit(10**7)
+threading.stack_size(2**27)
+threading.Thread(target=main).start()
