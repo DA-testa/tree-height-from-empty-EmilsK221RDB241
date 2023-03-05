@@ -1,3 +1,5 @@
+# Emīls Krūmiņš 221RDB241
+
 import sys
 import threading
 import numpy
