@@ -49,9 +49,6 @@ def main():
             with open(fp, 'r') as file:
                 print(file.read())
                 
-    if 'a' in filename.lower():
-        return
-
 sys.setrecursionlimit(10**7)
 threading.stack_size(2**27)
 threading.Thread(target=main).start()
