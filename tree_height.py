@@ -48,6 +48,9 @@ def main():
         if 'a' not in fp:
             with open(fp, 'r') as file:
                 print(file.read())
+                
+    if 'a' in filename.lower():
+        return
 
 sys.setrecursionlimit(10**7)
 threading.stack_size(2**27)
